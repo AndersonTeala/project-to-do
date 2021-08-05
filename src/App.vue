@@ -1,11 +1,22 @@
 <template>
 	<div id="app">
 		<h1>Tarefas</h1>
+		<TaskGrid :tasks="tasks" />
 	</div>
 </template>
 
 <script>
+import TaskGrid from './components/TaskGrid.vue'
 export default {
+	components: { TaskGrid },
+	data(){
+		return{
+			tasks: [
+				{ name: 'Lavar a louça', pending: false },
+				{ name: 'Comprar um celular', pending: true },
+			]
+		}
+	}
 
 }
 </script>
@@ -13,7 +24,8 @@ export default {
 <style>
 	body {
 		font-family: 'Lato', sans-serif;
-		background: linear-gradient(to right, rgb(22, 34, 42), rgb(58, 96, 115));
+		background: rgb(2,0,36);
+		background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(82,72,160,1) 35%, rgba(0,212,255,1) 100%);
 		color: #FFF;
 	}
 
