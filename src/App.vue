@@ -1,23 +1,64 @@
 <template>
 	<div id="app">
 		<h1>Tarefas</h1>
-		<TaskGrid :tasks="tasks" />
+		<TasksProgress :progress="progress" />
+		<NewTask @taskAdded="addTask" />
+		<TaskGrid :tasks="tasks"
+			@taskDeleted="deleteTask" 
+			@taskStateChanged="toggleTaskState" />
 	</div>
 </template>
 
 <script>
+import TasksProgress from './components/TasksProgress.vue'
+import NewTask from './components/NewTask.vue'
 import TaskGrid from './components/TaskGrid.vue'
-export default {
-	components: { TaskGrid },
-	data(){
-		return{
-			tasks: [
-				{ name: 'Lavar a louça', pending: false },
-				{ name: 'Comprar um celular', pending: true },
-			]
-		}
-	}
 
+export default {
+	components: { TasksProgress, NewTask, TaskGrid },
+	data() {
+		return {
+			tasks: []
+		}
+	},
+	computed: {
+		progress() {
+			const total = this.tasks.length
+			const done = this.tasks.filter(t => !t.pending).length
+			return Math.round(done / total * 100) || 0
+		}
+	},
+	watch: {
+		tasks: {
+			deep: true,
+			handler() {
+				localStorage.setItem('tasks', JSON.stringify(this.tasks))
+			}
+		}
+	},
+	methods: {
+		addTask(task) {
+			const sameName = t => t.name === task.name
+			const reallyNew = this.tasks.filter(sameName).length == 0
+			if(reallyNew) {
+				this.tasks.push({
+					name: task.name,
+					pending: task.pending || true
+				})
+			}
+		},
+		deleteTask(i) {
+			this.tasks.splice(i, 1)
+		},
+		toggleTaskState(i) {
+			this.tasks[i].pending = !this.tasks[i].pending
+		}
+	},
+	created() {
+		const json = localStorage.getItem('tasks')
+		const array = JSON.parse(json)
+		this.tasks = Array.isArray(array) ? array : []
+	}
 }
 </script>
 
@@ -25,7 +66,7 @@ export default {
 	body {
 		font-family: 'Lato', sans-serif;
 		background: rgb(2,0,36);
-		background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(82,72,160,1) 35%, rgba(0,212,255,1) 100%);
+		background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(40,42,54,1) 35%);
 		color: #FFF;
 	}
 
